@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-    
+
     private final List<Post> posts = new ArrayList<>();
 
     @GetMapping
@@ -51,7 +51,7 @@ public class PostController {
 
     }
 
-    @GetMapping("/{index}")
+    @GetMapping("/{id}")
     public ResponseEntity<PostResponseDTO> getPostById(@PathVariable int id) {
         if (id < 0 || id >= posts.size()) {
             return ResponseEntity.notFound().build();
@@ -88,7 +88,7 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{index}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable int id) {
         if (id < 0 || id >= posts.size()) {
             return ResponseEntity.notFound().build();
