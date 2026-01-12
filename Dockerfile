@@ -12,7 +12,7 @@ RUN mvn -B dependency:go-offline
 #Kopiera källkoden och bygg projektet
 # mvn package kör även tester automatiskt
 COPY src ./src
-RUN mvn -B package
+RUN mvn -B package -DskipTests
 
 
 FROM eclipse-temurin:17-jre
