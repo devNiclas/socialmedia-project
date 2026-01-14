@@ -1,6 +1,7 @@
 package se.jensen.niclas.springbootrestapi.service;
 
-import jakarta.annotation.security.PermitAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +20,7 @@ public class UserService {
     private final UserRepository repo;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository repo, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.repo = repo;
@@ -36,11 +37,10 @@ public class UserService {
 
     }
 
-    @PermitAll
     public UserResponseDTO addUser(UserRequestDTO dto) {
         boolean exists = repo.existsByUsernameOrEmail(dto.username(), dto.email());
         if (exists) {
-            throw new IllegalArgumentException("Användarnamn eller email finns redan");
+            throw new IllegalArgumentException("User or email already exists");
         }
         User user = userMapper.fromDto(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -52,9 +52,14 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDTO getUserById(Long id) {
         User user = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Användare hittades inte"));
+                .orElseThrow(() -> {
+                    logger.warn("Could not find user with ID {}", id);
+                    return new UsernameNotFoundException("User not found: " + id);
+                });
+
         return userMapper.toDTO(user);
     }
+
 
 //    public UserWithPostsResponseDTO getUserWithPosts(Long id) {
 //        User user = repo.findUserWithPosts(id)
@@ -74,7 +79,7 @@ public class UserService {
 
     public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
         User existingUser = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Användare med ID: " + id + " hittades inte"));
+                .orElseThrow(() -> new NoSuchElementException("User with ID: " + id + " was not found"));
         userMapper.fromDto(existingUser, dto);
         User saved = repo.save(existingUser);
 
@@ -83,7 +88,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         User existingUser = repo.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Användare med ID: " + id + " hittades inte"));
+                .orElseThrow(() -> new NoSuchElementException("User with ID: " + id + " was not found"));
         repo.delete(existingUser);
 
 
@@ -91,7 +96,7 @@ public class UserService {
 
     public UserResponseDTO getUserByUsername(String username) {
         User user = repo.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Användare hittades inte:  " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found:  " + username));
 
         return userMapper.toDTO(user);
 

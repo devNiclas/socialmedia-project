@@ -27,7 +27,7 @@ public class PostService {
         post.setCreatedAt(LocalDateTime.now());
 
         User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("Användare hittades inte med ID: " + userId));
+                .orElseThrow(() -> new NoSuchElementException("User with ID: " + userId + " " + "was not found"));
 
         post.setUser(user);
         Post savedPost = postRepo.save(post);
