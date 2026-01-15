@@ -1,17 +1,16 @@
 package se.jensen.niclas.springbootrestapi.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.mapper.PostMapper;
 import se.jensen.niclas.springbootrestapi.model.Post;
-import se.jensen.niclas.springbootrestapi.model.User;
 import se.jensen.niclas.springbootrestapi.repository.PostRepository;
 import se.jensen.niclas.springbootrestapi.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class PostService {
@@ -33,16 +32,37 @@ public class PostService {
     }
 
     public PostResponseDTO createPost(Long userId, PostRequestDTO postDto) {
-        Post post = new Post();
-        post.setText(postDto.text());
-        post.setCreatedAt(LocalDateTime.now());
+        Post post = postMapper.fromDTO(postDto);
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with ID: " + userId + " " + "was not found"));
-
-        post.setUser(user);
         Post savedPost = postRepo.save(post);
 
-        return new PostResponseDTO(savedPost.getId(), savedPost.getText(), savedPost.getCreatedAt());
+        return postMapper.toDTO(savedPost);
+    }
+
+    public PostResponseDTO getPostsById(Long id) {
+        Post post = postRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+
+        return postMapper.toDTO(post);
+
+
+    }
+
+    public PostResponseDTO updatePost(Long id, PostRequestDTO dto) {
+        Post existingPost = postRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+
+        postMapper.fromDTO(existingPost, dto);
+
+        Post updatedPost = postRepo.save(existingPost);
+        return postMapper.toDTO(updatedPost);
+
+    }
+
+    public void deletePost(Long id) {
+        if (!postRepo.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        postRepo.deleteById(id);
     }
 }
