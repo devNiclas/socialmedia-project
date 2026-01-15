@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.model.Post;
+import se.jensen.niclas.springbootrestapi.service.PostService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,18 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-
+    PostService postService;
     private final List<Post> posts = new ArrayList<>();
 
     @GetMapping
     public ResponseEntity<List<PostResponseDTO>> getAllPosts() {
-        List<PostResponseDTO> response =
-                posts.stream()
-                        .map(post -> new PostResponseDTO(
-                                post.getId(),
-                                post.getText(),
-                                post.getCreatedAt()))
-                        .toList();
+        List<PostResponseDTO> response = postService.getAllPosts();
 
 
         return ResponseEntity.ok(response);
