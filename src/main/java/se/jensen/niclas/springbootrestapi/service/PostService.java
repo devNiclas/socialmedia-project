@@ -39,6 +39,8 @@ public class PostService {
 
         Post post = postMapper.fromDTO(postDto);
 
+        post.setUser(user);
+
         Post savedPost = postRepo.save(post);
 
         return postMapper.toDTO(savedPost);
