@@ -22,9 +22,10 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<PostResponseDTO>> getAllPosts() {
-        List<PostResponseDTO> response = postService.getAllPosts();
+
+    @GetMapping("/feed")
+    public ResponseEntity<List<PostResponseDTO>> getGlobalFeed() {
+        List<PostResponseDTO> response = postService.getGlobalFeed();
 
         return ResponseEntity.ok(response);
     }
