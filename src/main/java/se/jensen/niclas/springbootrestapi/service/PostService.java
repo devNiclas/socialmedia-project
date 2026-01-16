@@ -7,10 +7,12 @@ import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.mapper.PostMapper;
 import se.jensen.niclas.springbootrestapi.model.Post;
+import se.jensen.niclas.springbootrestapi.model.User;
 import se.jensen.niclas.springbootrestapi.repository.PostRepository;
 import se.jensen.niclas.springbootrestapi.repository.UserRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class PostService {
@@ -32,6 +34,9 @@ public class PostService {
     }
 
     public PostResponseDTO createPost(Long userId, PostRequestDTO postDto) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User with ID: " + userId +  "was not found "))
+
         Post post = postMapper.fromDTO(postDto);
 
         Post savedPost = postRepo.save(post);
