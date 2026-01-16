@@ -1,7 +1,6 @@
 package se.jensen.niclas.springbootrestapi.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
@@ -9,7 +8,6 @@ import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.model.Post;
 import se.jensen.niclas.springbootrestapi.service.PostService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,28 +26,9 @@ public class PostController {
     public ResponseEntity<List<PostResponseDTO>> getAllPosts() {
         List<PostResponseDTO> response = postService.getAllPosts();
 
-
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<PostResponseDTO> addPost(
-            @Valid @RequestBody PostRequestDTO dto) {
-        LocalDateTime now = LocalDateTime.now();
-        Post post = new Post();
-        post.setId(0L);
-        post.setText(dto.text());
-        post.setCreatedAt(now);
-
-        posts.add(post);
-
-        PostResponseDTO response =
-                new PostResponseDTO(post.getId(),
-                        post.getText(), post.getCreatedAt());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDTO> getPostById(@PathVariable int id) {

@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
-import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
-import se.jensen.niclas.springbootrestapi.dto.UserRequestDTO;
-import se.jensen.niclas.springbootrestapi.dto.UserResponseDTO;
+import se.jensen.niclas.springbootrestapi.dto.*;
 import se.jensen.niclas.springbootrestapi.model.User;
 import se.jensen.niclas.springbootrestapi.service.PostService;
 import se.jensen.niclas.springbootrestapi.service.UserService;
@@ -41,6 +38,12 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
         UserResponseDTO response = userService.getUserById(id);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/with-posts")
+    public ResponseEntity<UserWithPostsResponseDTO> getUserWithPosts(@PathVariable Long id) {
+        UserWithPostsResponseDTO response = userService.getUserWithPosts(id);
         return ResponseEntity.ok(response);
     }
 
