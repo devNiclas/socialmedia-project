@@ -35,7 +35,7 @@ public class PostService {
 
     public PostResponseDTO createPost(Long userId, PostRequestDTO postDto) {
         User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with ID: " + userId +  "was not found "))
+                .orElseThrow(() -> new NoSuchElementException("User with ID: " + userId + "was not found "));
 
         Post post = postMapper.fromDTO(postDto);
 
