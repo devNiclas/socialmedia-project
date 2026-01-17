@@ -11,7 +11,6 @@ import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.model.Post;
 import se.jensen.niclas.springbootrestapi.service.PostService;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +34,8 @@ public class PostController {
                                 post.getText(),
                                 post.getCreatedAt()))
                         .toList();
+
+
         return ResponseEntity.ok(response);
     }
 
