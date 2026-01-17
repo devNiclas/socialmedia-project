@@ -1,7 +1,6 @@
 package se.jensen.niclas.springbootrestapi.controller;
 
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,6 +17,7 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
 
+    private final PostService postService;
     private final List<Post> posts = new ArrayList<>();
     private final PostService postService;
 
@@ -25,16 +25,13 @@ public class PostController {
         this.postService = postService;
     }
 
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
+
     @GetMapping
     public ResponseEntity<List<PostResponseDTO>> getAllPosts() {
-        List<PostResponseDTO> response =
-                posts.stream()
-                        .map(post -> new PostResponseDTO(
-                                post.getId(),
-                                post.getText(),
-                                post.getCreatedAt()))
-                        .toList();
-
+        List<PostResponseDTO> response = postService.getAllPosts();
 
         return ResponseEntity.ok(response);
     }

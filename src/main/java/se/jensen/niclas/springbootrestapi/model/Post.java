@@ -15,7 +15,7 @@ public class Post {
     private String text;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -29,15 +29,14 @@ public class Post {
         this.user = user;
     }
 
-    public Post(Long id, String text, LocalDateTime createdAt) {
+    public Post(Long id, String text) {
         this.id = id;
         this.text = text;
-        this.createdAt = createdAt;
     }
 
-    public Post(String text, LocalDateTime createdAt) {
+    public Post(String text) {
         this.text = text;
-        this.createdAt = createdAt;
+
     }
 
     public Post() {

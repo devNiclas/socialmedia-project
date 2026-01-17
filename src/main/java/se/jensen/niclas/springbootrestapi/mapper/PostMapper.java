@@ -7,14 +7,25 @@ import se.jensen.niclas.springbootrestapi.model.Post;
 
 @Component
 public class PostMapper {
-    public Post toPost(PostRequestDTO postRequestDTO) {
+
+    public Post fromDTO(PostRequestDTO dto) {
         Post post = new Post();
-        post.setText(postRequestDTO.text());
+        setPostValues(post, dto);
         return post;
     }
 
+    public Post fromDTO(Post post, PostRequestDTO dto) {
+        setPostValues(post, dto);
+        return post;
 
-    public PostResponseDTO toPostResponse(Post post) {
+    }
+
+    private void setPostValues(Post post, PostRequestDTO dto) {
+        post.setText(dto.text());
+    }
+
+
+    public PostResponseDTO toDTO(Post post) {
         return new PostResponseDTO(
                 post.getId(),
                 post.getText(),

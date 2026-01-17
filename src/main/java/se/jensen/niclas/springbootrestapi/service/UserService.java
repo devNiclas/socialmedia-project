@@ -6,8 +6,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.dto.UserRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.UserResponseDTO;
+import se.jensen.niclas.springbootrestapi.dto.UserWithPostsResponseDTO;
+import se.jensen.niclas.springbootrestapi.mapper.PostMapper;
 import se.jensen.niclas.springbootrestapi.mapper.UserMapper;
 import se.jensen.niclas.springbootrestapi.model.User;
 import se.jensen.niclas.springbootrestapi.repository.UserRepository;
@@ -19,12 +22,14 @@ import java.util.NoSuchElementException;
 public class UserService {
     private final UserRepository repo;
     private final UserMapper userMapper;
+    private final PostMapper postMapper;
     private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository repo, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository repo, UserMapper userMapper, PostMapper postMapper, PasswordEncoder passwordEncoder) {
         this.repo = repo;
         this.userMapper = userMapper;
+        this.postMapper = postMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -61,20 +66,18 @@ public class UserService {
     }
 
 
-//    public UserWithPostsResponseDTO getUserWithPosts(Long id) {
-//        User user = repo.findUserWithPosts(id)
-//                .orElseThrow(() -> new NoSuchElementException("Användare hittades inte med ID: " + id));
-//        List<PostResponseDTO> posts = user.getPosts()
-//                .stream()
+    public UserWithPostsResponseDTO getUserWithPosts(Long id) {
+        User user = repo.findUserWithPosts(id)
+                .orElseThrow(() -> new NoSuchElementException("Användare hittades inte med ID: " + id));
+        List<PostResponseDTO> postDtos = user.getPosts()
+                .stream()
+                .map(postMapper::toDTO)
+                .toList();
 
-    /// /                .map(p -> PostResponseDTO(
-    /// /                        p.getId(),
-    /// /                        p.getText(),
-    /// /                        p.getCreatedAt()
-    /// /
-    /// /                ))
-    /// /                .tolist();
-    /// /    }
+        UserResponseDTO userDto = userMapper.toDTO(user);
+
+        return new UserWithPostsResponseDTO(userDto, postDtos);
+    }
 
 
     public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
