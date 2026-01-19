@@ -63,29 +63,15 @@ public class PostController {
     public ResponseEntity<PostResponseDTO> updatePost(
             @PathVariable int id,
             @Valid @RequestBody PostRequestDTO dto) {
-
-        if (id < 0 || id >= posts.size()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Post post = posts.get(id);
-        post.setText(dto.text());
-
-        PostResponseDTO response = new PostResponseDTO(
-                0L,
-                post.getText(),
-                post.getCreatedAt()
-        );
-        return ResponseEntity.ok(response);
+        Long postId = (long) id;
+        return ResponseEntity.ok(postService.updatePost(postId, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable int id) {
-        if (id < 0 || id >= posts.size()) {
-            return ResponseEntity.notFound().build();
-        }
-        posts.remove(id);
-        return ResponseEntity.noContent().build();
+        Long postId = (long) id;
+        postService.deletePost(postId);
+        return ResponseEntity.ok().build();
     }
 
 
