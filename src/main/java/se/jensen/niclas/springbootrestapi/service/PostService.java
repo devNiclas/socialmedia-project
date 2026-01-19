@@ -26,8 +26,8 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
-    public List<PostResponseDTO> getAllPosts() {
-        List<Post> posts = postRepo.findAll();
+    public List<PostResponseDTO> getGlobalFeed() {
+        List<Post> posts = postRepo.findAllByOrderByCreatedAtDesc();
         return posts.stream()
                 .map(postMapper::toDTO)
                 .toList();
