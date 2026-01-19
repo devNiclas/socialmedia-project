@@ -71,6 +71,7 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + id));
         List<PostResponseDTO> postDtos = user.getPosts()
                 .stream()
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
                 .map(postMapper::toDTO)
                 .toList();
 
