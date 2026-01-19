@@ -68,7 +68,7 @@ public class UserService {
 
     public UserWithPostsResponseDTO getUserWithPosts(Long id) {
         User user = repo.findUserWithPosts(id)
-                .orElseThrow(() -> new NoSuchElementException("Användare hittades inte med ID: " + id));
+                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + id));
         List<PostResponseDTO> postDtos = user.getPosts()
                 .stream()
                 .map(postMapper::toDTO)
