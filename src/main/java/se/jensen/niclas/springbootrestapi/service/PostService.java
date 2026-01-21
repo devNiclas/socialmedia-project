@@ -39,7 +39,7 @@ public class PostService {
     public PostResponseDTO createPost(Long userId, PostRequestDTO postDto) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> {
-                    logger.error("Failed creating post! Could not find user with ID {}", userId);
+                    logger.warn("Failed creating post! Could not find user with ID {}", userId);
                     return new NoSuchElementException("User with ID: " + userId + "was not found ");
                 });
 
@@ -55,7 +55,7 @@ public class PostService {
     public PostResponseDTO getPostsById(Long id) {
         Post post = postRepo.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Failed getting post! Could not find post with ID {}", id);
+                    logger.warn("Failed getting post! Could not find post with ID {}", id);
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
                 });
 
@@ -65,7 +65,7 @@ public class PostService {
     public PostResponseDTO updatePost(Long id, PostRequestDTO dto) {
         Post existingPost = postRepo.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Failed updating post! Could not find post with ID {}", id);
+                    logger.warn("Failed updating post! Could not find post with ID {}", id);
                     return new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
                 });
 
@@ -77,7 +77,7 @@ public class PostService {
 
     public void deletePost(Long id) {
         if (!postRepo.existsById(id)) {
-            logger.error("Failed deleting post! Could not find post with ID {}", id);
+            logger.warn("Failed deleting post! Could not find post with ID {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         postRepo.deleteById(id);

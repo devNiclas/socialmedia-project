@@ -45,7 +45,7 @@ public class UserService {
     public UserResponseDTO addUser(UserRequestDTO dto) {
         boolean exists = repo.existsByUsernameOrEmail(dto.username(), dto.email());
         if (exists) {
-            logger.error("Failed adding user! Username ({}) or email ({}) already exists", dto.username(), dto.email());
+            logger.warn("Failed adding user! Username ({}) or email ({}) already exists", dto.username(), dto.email());
             throw new IllegalArgumentException("User or email already exists");
         }
         User user = userMapper.fromDto(dto);
@@ -59,7 +59,7 @@ public class UserService {
     public UserResponseDTO getUserById(Long id) {
         User user = repo.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Failed getting user information! Could not find user with ID {}", id);
+                    logger.warn("Failed getting user information! Could not find user with ID {}", id);
                     return new UsernameNotFoundException("User not found: " + id);
                 });
 
@@ -70,7 +70,7 @@ public class UserService {
     public UserWithPostsResponseDTO getUserWithPosts(Long id) {
         User user = repo.findUserWithPosts(id)
                 .orElseThrow(() -> {
-                    logger.error("Failed getting user with posts! Could not find user with ID {}", id);
+                    logger.warn("Failed getting user with posts! Could not find user with ID {}", id);
                     return new NoSuchElementException("User not found with ID: " + id);
                 });
         List<PostResponseDTO> postDtos = user.getPosts()
@@ -88,7 +88,7 @@ public class UserService {
     public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
         User existingUser = repo.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Failed updating user! Could not find user with ID {}", id);
+                    logger.warn("Failed updating user! Could not find user with ID {}", id);
                     return new NoSuchElementException("User with ID: " + id + " was not found");
                 });
         userMapper.fromDto(existingUser, dto);
@@ -100,7 +100,7 @@ public class UserService {
     public void deleteUser(Long id) {
         User existingUser = repo.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Failed deleting user! Could not find user with ID {}", id);
+                    logger.warn("Failed deleting user! Could not find user with ID {}", id);
                     return new NoSuchElementException("User with ID: " + id + " was not found");
                 });
         repo.delete(existingUser);
@@ -111,7 +111,7 @@ public class UserService {
     public UserResponseDTO getUserByUsername(String username) {
         User user = repo.findByUsername(username)
                 .orElseThrow(() -> {
-                    logger.error("Failed getting user! Could not find user with username {}", username);
+                    logger.warn("Failed getting user! Could not find user with username {}", username);
                     return new UsernameNotFoundException("User not found: " + username);
                 });
 

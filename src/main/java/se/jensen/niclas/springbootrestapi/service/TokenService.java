@@ -32,7 +32,7 @@ public class TokenService {
         String username = authentication.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
-                    logger.error("Failed generating token! Could not find user with username {}", username);
+                    logger.warn("Failed generating token! Could not find user with username {}", username);
                     return new IllegalStateException("User not found");
                 });
 
