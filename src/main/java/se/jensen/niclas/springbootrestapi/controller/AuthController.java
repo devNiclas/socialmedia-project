@@ -37,11 +37,10 @@ public class AuthController {
         );
 
         MyUserDetails details = (MyUserDetails) auth.getPrincipal();
-        details.getId();
 
         String token = tokenService.generateToken(auth);
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        return ResponseEntity.ok(new LoginResponseDTO(token, details.getId()));
 
     }
 
