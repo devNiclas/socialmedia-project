@@ -1,5 +1,7 @@
 package se.jensen.niclas.springbootrestapi.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,6 +21,7 @@ public class PostService {
     private final UserRepository userRepo;
     private final PostRepository postRepo;
     private final PostMapper postMapper;
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     public PostService(UserRepository userRepo, PostRepository postRepo, PostMapper postMapper) {
         this.userRepo = userRepo;
@@ -35,7 +38,10 @@ public class PostService {
 
     public PostResponseDTO createPost(Long userId, PostRequestDTO postDto) {
         User user = userRepo.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User with ID: " + userId + "was not found "));
+                .orElseThrow(() -> {
+                    logger.warn("Failed creating post! Could not find user with ID {}", userId);
+                    return new NoSuchElementException("User with ID: " + userId + "was not found ");
+                });
 
         Post post = postMapper.fromDTO(postDto);
 
@@ -48,26 +54,30 @@ public class PostService {
 
     public PostResponseDTO getPostsById(Long id) {
         Post post = postRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Failed getting post! Could not find post with ID {}", id);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+                });
 
         return postMapper.toDTO(post);
-
-
     }
 
     public PostResponseDTO updatePost(Long id, PostRequestDTO dto) {
         Post existingPost = postRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Failed updating post! Could not find post with ID {}", id);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+                });
 
         postMapper.fromDTO(existingPost, dto);
 
         Post updatedPost = postRepo.save(existingPost);
         return postMapper.toDTO(updatedPost);
-
     }
 
     public void deletePost(Long id) {
         if (!postRepo.existsById(id)) {
+            logger.warn("Failed deleting post! Could not find post with ID {}", id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         postRepo.deleteById(id);
