@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.jensen.niclas.springbootrestapi.dto.LoginRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.LoginResponseDTO;
+import se.jensen.niclas.springbootrestapi.security.MyUserDetails;
 import se.jensen.niclas.springbootrestapi.service.TokenService;
 
 @RestController
@@ -34,6 +35,9 @@ public class AuthController {
                         loginRequest.password()
                 )
         );
+
+        MyUserDetails details = (MyUserDetails) auth.getPrincipal();
+        details.getId();
 
         String token = tokenService.generateToken(auth);
 
