@@ -8,6 +8,12 @@ import se.jensen.niclas.springbootrestapi.model.Post;
 @Component
 public class PostMapper {
 
+    private final UserMapper userMapper;
+
+    public PostMapper(UserMapper userMapper) {
+        this.userMapper = userMapper;
+    }
+
     public Post fromDTO(PostRequestDTO dto) {
         Post post = new Post();
         setPostValues(post, dto);
@@ -29,7 +35,8 @@ public class PostMapper {
         return new PostResponseDTO(
                 post.getId(),
                 post.getText(),
-                post.getCreatedAt()
+                post.getCreatedAt(),
+                userMapper.toDTO(post.getUser())
 
         );
     }

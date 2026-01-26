@@ -53,7 +53,8 @@ public class PostController {
                 new PostResponseDTO(
                         0L,
                         p.getText(),
-                        p.getCreatedAt()
+                        p.getCreatedAt(),
+                        null
                 );
         return ResponseEntity.ok(response);
 
