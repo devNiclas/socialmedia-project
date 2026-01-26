@@ -8,10 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
-import se.jensen.niclas.springbootrestapi.model.Post;
 import se.jensen.niclas.springbootrestapi.service.PostService;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,7 +16,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final List<Post> posts = new ArrayList<>();
 
     public PostController(PostService postService) {
         this.postService = postService;
@@ -44,20 +40,8 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDTO> getPostById(@PathVariable int id) {
-        if (id < 0 || id >= posts.size()) {
-            return ResponseEntity.notFound().build();
-        }
-        Post p = posts.get(id);
-
-        PostResponseDTO response =
-                new PostResponseDTO(
-                        0L,
-                        p.getText(),
-                        p.getCreatedAt(),
-                        null
-                );
-        return ResponseEntity.ok(response);
-
+        Long postId = (long) id;
+        return ResponseEntity.ok(postService.getPostsById(postId));
     }
 
     @PutMapping("/{id}")
