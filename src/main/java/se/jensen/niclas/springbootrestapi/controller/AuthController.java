@@ -13,21 +13,33 @@ import se.jensen.niclas.springbootrestapi.dto.LoginResponseDTO;
 import se.jensen.niclas.springbootrestapi.security.MyUserDetails;
 import se.jensen.niclas.springbootrestapi.service.TokenService;
 
+/**
+ * This class authenticate user credentials and generate JWT
+ * This act as the login end point
+ */
 @RestController
 @RequestMapping("/request-token")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
 
+    /**
+     * @param authenticationManager verifies username & password
+     * @param tokenService creates JWT after login
+     */
     public AuthController(AuthenticationManager authenticationManager,
                           TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
     }
 
+    /**
+     * Authenticate the user with provided user credintials and generate JWT
+     * @param loginRequest containing the username and password
+     * @return responseEntity with LoginResponseDTO} with the JWT token and the user ID
+     */
     @PostMapping
-    public ResponseEntity<LoginResponseDTO> token(
-            @RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<LoginResponseDTO> token( @RequestBody LoginRequestDTO loginRequest) {
 
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -36,9 +48,9 @@ public class AuthController {
                 )
         );
 
-        MyUserDetails details = (MyUserDetails) auth.getPrincipal();
+        MyUserDetails details = (MyUserDetails) auth.getPrincipal(); //After login user details are saved
 
-        String token = tokenService.generateToken(auth);
+        String token = tokenService.generateToken(auth); // generates the JWT
 
         return ResponseEntity.ok(new LoginResponseDTO(token, details.getId()));
 
