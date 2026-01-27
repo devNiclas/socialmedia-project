@@ -34,7 +34,7 @@ public class AuthController {
     }
 
     /**
-     * Authenticate the user with provided user credintials and generate JWT
+     * Authenticate the user with provided user credentials and generate JWT
      * @param loginRequest containing the username and password
      * @return responseEntity with LoginResponseDTO} with the JWT token and the user ID
      */
