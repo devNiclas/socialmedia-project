@@ -13,6 +13,10 @@ import se.jensen.niclas.springbootrestapi.service.UserService;
 
 import java.util.List;
 
+/**
+ * This controller responsible for managing users and the posts by users
+ * Provides endpoints for fetch users, creating new users, updating and deleting users, as well as fetching a user together with their posts
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {
