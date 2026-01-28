@@ -51,7 +51,7 @@ public class SecurityConfig {
                 "http://localhost:5174",
                 "http://localhost:5175",
                 "http://localhost:3000",
-                "fragile-sharia-sandrajensen-2281f29e.koyeb.app"
+                "https://fragile-sharia-sandrajensen-2281f29e.koyeb.app"
         ));
 
         config.setAllowedMethods(List.of(
