@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import se.jensen.niclas.springbootrestapi.dto.PostRequestDTO;
 import se.jensen.niclas.springbootrestapi.dto.PostResponseDTO;
 import se.jensen.niclas.springbootrestapi.service.PostService;
+
 import java.util.List;
 
 @RestController
@@ -22,7 +23,7 @@ public class PostController {
     }
 
 
-    @GetMapping("/feed")
+    @GetMapping
     public ResponseEntity<List<PostResponseDTO>> getGlobalFeed() {
         List<PostResponseDTO> response = postService.getGlobalFeed();
 
