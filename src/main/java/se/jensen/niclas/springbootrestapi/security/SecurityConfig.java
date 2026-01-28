@@ -51,8 +51,7 @@ public class SecurityConfig {
                 "http://localhost:5174",
                 "http://localhost:5175",
                 "http://localhost:3000",
-                "https://hissing-delia-sandrasallad-5bbe7e35.koyeb.app",
-                "https://socialmedia-app-project.koyeb.app"
+                "https://fragile-sharia-sandrajensen-2281f29e.koyeb.app"
         ));
 
         config.setAllowedMethods(List.of(
@@ -79,6 +78,7 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/request-token").permitAll()
                         .requestMatchers(

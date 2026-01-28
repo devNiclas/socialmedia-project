@@ -8,17 +8,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import se.jensen.niclas.springbootrestapi.dto.*;
-import se.jensen.niclas.springbootrestapi.model.User;
 import se.jensen.niclas.springbootrestapi.service.PostService;
 import se.jensen.niclas.springbootrestapi.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final List<User> users = new ArrayList<>();
+
     private final UserService userService;
     PostService postService;
 
