@@ -7,7 +7,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import se.jensen.niclas.springbootrestapi.dto.*;
+import se.jensen.niclas.springbootrestapi.dto.UserRequestDTO;
+import se.jensen.niclas.springbootrestapi.dto.UserResponseDTO;
+import se.jensen.niclas.springbootrestapi.dto.UserWithPostsResponseDTO;
 import se.jensen.niclas.springbootrestapi.mapper.PostMapper;
 import se.jensen.niclas.springbootrestapi.mapper.UserMapper;
 import se.jensen.niclas.springbootrestapi.model.Post;
@@ -30,14 +32,14 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Spy
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Spy
-    private UserMapper userMapper;
+    private UserMapper userMapper = new UserMapper();
 
     @Spy
-    private PostMapper postMapper;
+    private PostMapper postMapper = new PostMapper(userMapper);
 
     @Test
     public void testGetUserById() {
@@ -96,6 +98,7 @@ public class UserServiceTest {
         user.setEmail("testuser1@gmail.com");
         user.setId(1L);
 
+        when(passwordEncoder.encode("password")).thenReturn("hashed_password");
         when(userRepository.existsByUsernameOrEmail(userDto.username(), userDto.email())).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(user);
 
@@ -111,23 +114,27 @@ public class UserServiceTest {
     @Test
     public void testGetUserWithPosts_shouldReturnUserWithPosts() {
         // Arrange
+        User user = new User();
+        user.setUsername("testuser1");
+        user.setEmail("testuser1@gmail.com");
+        user.setId(1L);
+
+
         Post post1 = new Post();
         post1.setText("text 1");
         post1.setId(10L);
+        post1.setUser(user);
 
         Post post2 = new Post();
         post2.setText("text 2");
         post2.setId(20L);
+        post2.setUser(user);
 
         List<Post> posts = new ArrayList<>();
         posts.add(post1);
         posts.add(post2);
-
-        User user = new User();
-        user.setUsername("testuser1");
-        user.setEmail("testuser1@gmail.com");
         user.setPosts(posts);
-        user.setId(1L);
+
 
         when(userRepository.findUserWithPosts(1L)).thenReturn(Optional.of(user));
 
@@ -137,8 +144,8 @@ public class UserServiceTest {
         // Assert
         assertEquals("testuser1", userWithPosts.user().username());
         assertEquals("testuser1@gmail.com", userWithPosts.user().email());
-        assertEquals("text 2", userWithPosts.posts().get(0).text());
-        assertEquals("text 1", userWithPosts.posts().get(1).text());
+        assertEquals("text 1", userWithPosts.posts().get(0).text());
+        assertEquals("text 2", userWithPosts.posts().get(1).text());
     }
 
     @Test
