@@ -4,7 +4,23 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Base64;
 
+/**
+ *
+ * Class that generates key pairs for JWT configuration
+ *
+ */
+
 public class MyKeyGenerator {
+
+    /**
+     *
+     * Generates both private and public key.
+     * Will be visable in the console
+     *
+     * @param args the program argument
+     * @throws Exception is thrown in case the keys does not work
+     */
+
     public static void main(String[] args) throws Exception {
 
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
