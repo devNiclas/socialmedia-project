@@ -38,10 +38,20 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
 
+/**
+ * Security configuration for the Spring Boot application.
+ * Handles CORS, CSRF, session management and RSA key pair for JWT.
+ */
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Configures CORS settings for the application.
+     * Allows specific origins (frontend URLs), methods, and headers.
+     *
+     * @return CorsConfigurationSource with the defined CORS settings.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -68,9 +78,20 @@ public class SecurityConfig {
         return source;
     }
 
+    /**
+     * The main security filter chain configuration.
+     * Disables CSRF for stateless API interaction.
+     * Authorizes requests based on HTTP methods and paths.
+     *
+     * @param http the HttpSecurity to configure
+     * @return the built SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+        // Disable CSRF because we use JWT tokens
         http.csrf(AbstractHttpConfigurer::disable)
 
                 .sessionManagement(session ->
@@ -78,15 +99,15 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/request-token").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll() // Allow anyone to create user
+                        .requestMatchers("/request-token").permitAll() // Allow anyone to login
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
-                        ).permitAll()
-                        .anyRequest().authenticated()
+                        ).permitAll() // Allow access to Swagger UI
+                        .anyRequest().authenticated() // All other requests need a token
                 )
 
                 .oauth2ResourceServer(oauth2 ->
@@ -100,11 +121,24 @@ public class SecurityConfig {
 
     }
 
+    /**
+     * Bean for password hashing using BCrypt
+     *
+     * @return PasswordEncoder instance
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Generates an RSA KeyPair for JWT signing and verification.
+     *
+     * @param privateKey the Base64-encoded private key string
+     * @param publicKey  the Base64-encoded public key string
+     * @return KeyPair containing the RSA public and private keys
+     * @throws Exception if key generation fails
+     */
     @Bean
     public KeyPair keyPair(
             @Value("${jwt.private-key}") String privateKey,
@@ -115,8 +149,8 @@ public class SecurityConfig {
         byte[] privateBytes = Base64.getDecoder().decode(privateKey);
         byte[] publicBytes = Base64.getDecoder().decode(publicKey);
 
+        // Create the private and public key objects
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-
         PrivateKey privKey = keyFactory.generatePrivate(
                 new PKCS8EncodedKeySpec(privateBytes)
         );
@@ -128,6 +162,12 @@ public class SecurityConfig {
         return new KeyPair(pubKey, privKey);
     }
 
+    /**
+     * Creates a JWKSource from the provided KeyPair for JWT.
+     *
+     * @param keyPair the generated RSA KeyPair
+     * @return JWKSource for JWT encoding and decoding
+     */
     @Bean
     public JWKSource<SecurityContext> jwkSource(KeyPair keyPair) {
         RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) keyPair.getPublic())
@@ -140,11 +180,24 @@ public class SecurityConfig {
         return (jwkSelector, context) -> jwkSelector.select(jwkSet);
     }
 
+    /**
+     * Bean for encoding JWTs using the RSA keys.
+     *
+     * @param jwkSource the JWKSource containing the RSA keys
+     * @return JwtEncoder instance
+     */
     @Bean
     public JwtEncoder jwtEncoder(JWKSource<SecurityContext> jwkSource) {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+
+    /**
+     * Bean for decoding and verifying incoming JWTs.
+     *
+     * @param keyPair the generated RSA KeyPair
+     * @return JwtDecoder instance
+     */
     @Bean
     public JwtDecoder jwtDecoder(KeyPair keyPair) {
         return NimbusJwtDecoder
@@ -152,11 +205,18 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Bean to convert JWT claims into Spring Security authorities(roles).*
+     * Uses "scope" claim without any prefix.
+     *
+     * @return JwtAuthenticationConverter instance
+     */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter =
                 new JwtGrantedAuthoritiesConverter();
 
+        // Look for "scope" inside the token to find user roles
         converter.setAuthorityPrefix("");
         converter.setAuthoritiesClaimName("scope");
 
@@ -167,6 +227,13 @@ public class SecurityConfig {
         return authenticationConverter;
     }
 
+    /**
+     * Bean for AuthenticationManager to handle user authentication.
+     *
+     * @param configuration the AuthenticationConfiguration
+     * @return AuthenticationManager instance
+     * @throws Exception if retrieval fails
+     */
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
