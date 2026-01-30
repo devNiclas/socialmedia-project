@@ -37,6 +37,7 @@ public class PostController {
      * This endpoint handles HTTP GET requests
      * Show all posts from the  global feed
      * Call the post service to get the global feed.
+     *
      * @return a list of post in a PostResponseDTO
      * HTTP status
      * Send status OK when the request is successful
@@ -52,8 +53,9 @@ public class PostController {
      * This endpoint handles HTTP POST requests
      * It let the user create new post
      * The authenticated user's details are checked before creating  new post
-     * @param dto the request body containing post creation data
-     * @param authentication  object holding the JWT token
+     *
+     * @param dto            the request body containing post creation data
+     * @param authentication object holding the JWT token
      * @return a ResponseEntity containing the created PostResponseDTO containing the created post data with the status CREATED
      */
     @PostMapping
@@ -68,6 +70,7 @@ public class PostController {
     /**
      * This method let the user find a post by post ID
      * The ID received as a path variable
+     *
      * @param id post Id
      * @return If the post is found method returns post details in a ResponseEntity with status OK
      */
@@ -81,6 +84,7 @@ public class PostController {
      * This method use to Update an existing post identified by its ID.
      * This endpoint handles HTTP PUT requests to update a post
      * The post ID is provided as a path variable
+     *
      * @param id  ID of the post to update
      * @param dto the request body containing updated post data
      * @return a ResponseEntity containing the created PostResponseDTO containing the updated post data with the status ok
@@ -97,6 +101,7 @@ public class PostController {
      * This method use to delete an existing post identified by its ID.
      * This endpoint handles HTTP DELETE requests
      * The post ID is provided as a path variable
+     *
      * @param id ID of the post to delete
      * @return ResponseEntity containing the created PostResponseDTO containing the deleted post data with the status ok
      */
@@ -104,7 +109,7 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@PathVariable int id) {
         Long postId = (long) id;
         postService.deletePost(postId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
 
